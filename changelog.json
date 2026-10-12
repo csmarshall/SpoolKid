@@ -1,5 +1,60 @@
 [
   {
+    "version": "0.25",
+    "date": "2026-10-12",
+    "headline": "Tag identity, filament tags and empty spools",
+    "changes": [
+      {
+        "kind": "added",
+        "text": "SpoolKid can act as a Spoolman 0.27 tag reader: pair it in Library → Spoolman → Tag Reader, and a paired browser opens the spool of each tag you scan."
+      },
+      {
+        "kind": "added",
+        "text": "Tags can identify a filament (Spoolman 0.27 and the on-device Library): scan one to see the filament and its spools, and link tags from the filament's form."
+      },
+      {
+        "kind": "added",
+        "text": "Empty Spools: keep a library of empty spool weights with manufacturers and photos, mark one as the default for new spools, and pick one in the spool form or Weigh Spools."
+      },
+      {
+        "kind": "added",
+        "text": "Choose how tags identify spools: Tag Links (a tag finds the spool it is linked to) or Spool ID (the ID written on the tag). New installs ask once; upgrades keep their behaviour."
+      },
+      {
+        "kind": "added",
+        "text": "The on-device Library now keeps tag links too, so every tag you link finds its spool when scanned."
+      },
+      {
+        "kind": "improved",
+        "text": "Transfer Tag and Link Tag pick a spool or a filament in one picker."
+      },
+      {
+        "kind": "improved",
+        "text": "Manufacturers: pick one from your own list or your backend's catalogue (SpoolmanDB, or FilaManDB on FilaMan) when adding a manufacturer, editing a filament, or describing an empty spool. A new one is added when you save the filament."
+      },
+      {
+        "kind": "improved",
+        "text": "Tag links are no longer read from a spool's Lot/Batch field (lot_nr, card_uid:…); they live in Tags (card_uids, or Spoolman's own Tags)."
+      },
+      {
+        "kind": "improved",
+        "text": "Select Filament: when only one list matches your search, the other says \"No matches\" in one line, so SpoolmanDB results stay visible above the keyboard."
+      },
+      {
+        "kind": "fixed",
+        "text": "Moving the on-device Library to a server no longer forgets the empty locations and location tags SpoolKid keeps for your servers."
+      },
+      {
+        "kind": "fixed",
+        "text": "A Library, location or password save that fails now says so instead of looking saved."
+      },
+      {
+        "kind": "fixed",
+        "text": "Weigh Spools' (i) buttons are reachable with VoiceOver."
+      }
+    ]
+  },
+  {
     "version": "0.24",
     "date": "2026-10-08",
     "headline": "ELEGOO writing and Spoolman Tags",
