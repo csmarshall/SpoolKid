@@ -165,11 +165,9 @@ struct WriteTagFormAssemblerTests {
         #expect(!openSpoolFieldIDs.contains("subtype"))
     }
 
-    @Test func openSpoolNameFieldRemainsVisibleWhenU1CompatEnabledIfVisibilityAllowsIt() {
+    @Test func openSpoolNameFieldShowsWhenVisibilityAllowsIt() {
         let shouldShow = WriteTagFormAssembler.shouldShowNameField(
-            format: .openSpool,
-            visibleFieldIDs: ["name"],
-            isU1CompatActive: true
+            visibleFieldIDs: ["name"]
         )
 
         #expect(shouldShow)
@@ -177,9 +175,7 @@ struct WriteTagFormAssemblerTests {
 
     @Test func nameFieldHidesWhenNotVisibleInFormatVisibility() {
         let shouldShow = WriteTagFormAssembler.shouldShowNameField(
-            format: .openSpool,
-            visibleFieldIDs: [],
-            isU1CompatActive: false
+            visibleFieldIDs: []
         )
 
         #expect(!shouldShow)
