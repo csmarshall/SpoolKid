@@ -40,9 +40,12 @@ struct SpoolmanServiceURLTests {
 /// so a test can check which URL each SpoolmanService call really hits.
 final class RecordingURLProtocol: URLProtocol, @unchecked Sendable {
     nonisolated(unsafe) static var requested: [URL] = []
+    nonisolated(unsafe) static var status = 200
+    nonisolated(unsafe) static var contentType = "application/json"
+    nonisolated(unsafe) static var body = "[]"
     private static let lock = NSLock()
 
-    static func reset() { lock.withLock { requested = [] } }
+    static func reset() { lock.withLock { requested = []; status = 200; contentType = "application/json"; body = "[]" } }
     static func snapshot() -> [URL] { lock.withLock { requested } }
 
     override class func canInit(with request: URLRequest) -> Bool { request.url?.host == "spoolkid-stub.invalid" }
@@ -50,18 +53,25 @@ final class RecordingURLProtocol: URLProtocol, @unchecked Sendable {
 
     override func startLoading() {
         if let url = request.url { Self.lock.withLock { Self.requested.append(url) } }
-        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!
+        let (status, contentType, body) = Self.lock.withLock { (Self.status, Self.contentType, Self.body) }
+        let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: ["Content-Type": contentType])!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-        client?.urlProtocol(self, didLoad: Data("[]".utf8))
+        client?.urlProtocol(self, didLoad: Data(body.utf8))
         client?.urlProtocolDidFinishLoading(self)
     }
 
     override func stopLoading() {}
 }
 
-/// Drives each of SpoolmanService's four request paths and checks the URL on the wire.
-@MainActor
+/// Every suite that talks to RecordingURLProtocol lives under this parent. The stub's
+/// state is static, and a serialized parent keeps its nested suites from overlapping.
 @Suite(.serialized)
+enum StubbedNetwork {}
+
+/// Drives each of SpoolmanService's four request paths and checks the URL on the wire.
+extension StubbedNetwork {
+@MainActor
+@Suite
 struct SpoolmanServiceWiringTests {
     private let base = "https://spoolkid-stub.invalid/spoolman/"
 
@@ -97,4 +107,5 @@ struct SpoolmanServiceWiringTests {
         #expect(service.errorMessage?.contains("http://") == true)
         #expect(RecordingURLProtocol.snapshot().isEmpty)
     }
+}
 }

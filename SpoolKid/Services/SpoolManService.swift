@@ -136,6 +136,10 @@ class SpoolmanService: ObservableObject {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
+
+        if let loginPage = SpoolmanResponseCheck.loginPageError(statusCode: httpResponse.statusCode, mimeType: httpResponse.mimeType) {
+            throw loginPage
+        }
         
         if !(200...299).contains(httpResponse.statusCode) {
             if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -168,6 +172,10 @@ class SpoolmanService: ObservableObject {
             throw URLError(.badServerResponse)
         }
 
+        if let loginPage = SpoolmanResponseCheck.loginPageError(statusCode: httpResponse.statusCode, mimeType: httpResponse.mimeType) {
+            throw loginPage
+        }
+
         if !(200...299).contains(httpResponse.statusCode) {
             if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let message = errorJson["message"] as? String {
@@ -188,6 +196,10 @@ class SpoolmanService: ObservableObject {
         
         let (_, response) = try await session.data(for: request)
         
+        if let httpResponse = response as? HTTPURLResponse,
+           let loginPage = SpoolmanResponseCheck.loginPageError(statusCode: httpResponse.statusCode, mimeType: httpResponse.mimeType) {
+            throw loginPage
+        }
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw URLError(.badServerResponse)
         }
@@ -590,6 +602,10 @@ class SpoolmanService: ObservableObject {
             
             let (data, response) = try await session.data(for: request)
             
+            if let httpResponse = response as? HTTPURLResponse,
+               let loginPage = SpoolmanResponseCheck.loginPageError(statusCode: httpResponse.statusCode, mimeType: httpResponse.mimeType) {
+                throw loginPage
+            }
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 throw URLError(.badServerResponse)
             }
