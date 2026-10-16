@@ -36,6 +36,12 @@ Every scan, whichever way it arrives, lands in the **Scan Result Hub**, which wo
 - Import filament definitions from the global [SpoolmanDB](https://github.com/Donkie/SpoolmanDB) catalog, creating the vendor and filament in your Spoolman automatically.
 - Create a spool and write its NFC tag in one step with **Save and Write NFC Tag**.
 
+#### Server address
+
+Enter the address of your Spoolman server, for example `http://192.168.1.10:7912` or `https://example.com/spoolman`. If Spoolman is served under a sub-path by a reverse proxy, include the path; SpoolKid appends its API paths to it. Surrounding whitespace and trailing slashes are ignored, so `https://example.com/spoolman/` and `https://example.com/spoolman` behave the same. The address must start with `http://` or `https://`, and must not contain a query (`?`), a fragment (`#`) or a user name and password (use the authentication settings for those). IPv6 literals such as `http://[fd00::1]:7912` work.
+
+If a reverse proxy in front of Spoolman answers with its own sign-in page instead of Spoolman data, SpoolKid says so rather than reporting a decoding error.
+
 ### SpoolLink tag mapping
 
 Tag-to-spool mappings are stored in Spoolman's `card_uids` extra field — uppercase hex, comma-separated, with no limit on how many tags a spool can carry. This matches the [Snapmaker U1 Extended Firmware](https://github.com/paxx12/SnapmakerU1-Extended-Firmware) convention, so your printer recognises spools by tag.
