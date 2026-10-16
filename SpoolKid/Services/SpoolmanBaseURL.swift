@@ -69,8 +69,10 @@ nonisolated struct SpoolmanBaseURL: Equatable {
     }
 
     /// Appends an already percent-encoded endpoint path ("/api/v1/spool") to the base path.
-    /// Returns nil if the result is not a valid URL.
+    /// Returns nil if the result is not a valid URL, or if `path` carries a query or fragment
+    /// (those would be mangled into the path; escape `?` and `#` inside a segment as %3F / %23).
     func endpoint(_ path: String) -> URL? {
+        guard !path.contains("?"), !path.contains("#") else { return nil }
         var result = components
         let suffix = path.hasPrefix("/") ? path : "/" + path
         result.percentEncodedPath = components.percentEncodedPath + suffix

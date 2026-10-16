@@ -76,6 +76,7 @@ struct SpoolmanServiceWiringTests {
     private let base = "https://spoolkid-stub.invalid/spoolman/"
 
     init() {
+        UserDefaults.standard.removeObject(forKey: AppConfig.trustAllCertsKey)
         URLProtocol.registerClass(RecordingURLProtocol.self)
         RecordingURLProtocol.reset()
     }

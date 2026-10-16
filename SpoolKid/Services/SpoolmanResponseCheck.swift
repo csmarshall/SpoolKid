@@ -10,7 +10,7 @@
 import Foundation
 
 nonisolated enum SpoolmanResponseCheck {
-    static let loginPageMessage = "The server returned a web page instead of Spoolman data. A reverse proxy in front of Spoolman is probably asking you to sign in. Check the authentication settings."
+    static let loginPageMessage = "The server returned a web page instead of Spoolman data. A reverse proxy in front of Spoolman is probably asking you to sign in. Check the authentication settings, or allow API access for SpoolKid in the proxy."
 
     /// An error when the response is an HTML page where an API answer was expected
     /// and the status is one a login page uses (success, 401 or 403). Other statuses

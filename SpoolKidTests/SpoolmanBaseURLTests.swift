@@ -70,6 +70,16 @@ struct SpoolmanBaseURLTests {
         #expect(try Self.endpoint("https://example.com/my%20tools/spoolman") == "https://example.com/my%20tools/spoolman/api/v1/spool")
     }
 
+    @Test func addressWithSpaceOrNonASCIIHostIsPercentEncodedNotRejected() throws {
+        #expect(try Self.endpoint("https://example.com/my tools/spoolman") == "https://example.com/my%20tools/spoolman/api/v1/spool")
+        #expect(try Self.endpoint("https://exämple.com/spoolman") == "https://xn--exmple-cua.com/spoolman/api/v1/spool")
+    }
+
+    @Test(arguments: ["/api/v1/spool?allow_archived=true", "/api/v1/spool#x", "/api/v1/spool?"])
+    func endpointWithQueryOrFragmentIsRefused(path: String) throws {
+        #expect(try SpoolmanBaseURL("https://example.com/spoolman").endpoint(path) == nil)
+    }
+
     // MARK: - Rejections
 
     @Test(arguments: [
