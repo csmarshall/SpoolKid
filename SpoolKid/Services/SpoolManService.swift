@@ -40,6 +40,15 @@ class SpoolmanService: ObservableObject {
         return URLSession.shared
     }
     
+    /// Joins the configured server address and an endpoint path ("/api/v1/spool").
+    /// The address may carry a sub-path (https://example.com/spoolman) and a trailing slash.
+    static func requestURL(baseUrl: String, endpoint: String) throws -> URL {
+        guard let url = try SpoolmanBaseURL(baseUrl).endpoint(endpoint) else {
+            throw URLError(.badURL)
+        }
+        return url
+    }
+
     /// Applies the configured authentication headers to a URLRequest.
     /// Reads the auth type and credentials from UserDefaults (set via Settings.bundle).
     private func applyAuth(to request: inout URLRequest) {
@@ -111,9 +120,7 @@ class SpoolmanService: ObservableObject {
     
     // Generic Request Helper
     private func sendRequest<T: Decodable>(method: String, endpoint: String, baseUrl: String, body: [String: Any]? = nil) async throws -> T {
-        guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
-            throw URLError(.badURL)
-        }
+        let url = try Self.requestURL(baseUrl: baseUrl, endpoint: endpoint)
         
         var request = URLRequest(url: url)
         request.httpMethod = method
@@ -144,9 +151,7 @@ class SpoolmanService: ObservableObject {
     }
 
     private func sendRequestWithoutDecoding(method: String, endpoint: String, baseUrl: String, body: [String: Any]? = nil) async throws {
-        guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
-            throw URLError(.badURL)
-        }
+        let url = try Self.requestURL(baseUrl: baseUrl, endpoint: endpoint)
 
         var request = URLRequest(url: url)
         request.httpMethod = method
@@ -175,9 +180,7 @@ class SpoolmanService: ObservableObject {
     }
     
     private func sendDeleteRequest(endpoint: String, baseUrl: String) async throws {
-        guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
-            throw URLError(.badURL)
-        }
+        let url = try Self.requestURL(baseUrl: baseUrl, endpoint: endpoint)
         
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
@@ -569,8 +572,11 @@ class SpoolmanService: ObservableObject {
     }
     
     private func fetchData<T: Decodable>(endpoint: String, baseUrl: String, completion: @escaping ([T]) -> Void) async {
-        guard let url = URL(string: "\(baseUrl)\(endpoint)") else {
-            self.errorMessage = "Invalid URL"
+        let url: URL
+        do {
+            url = try Self.requestURL(baseUrl: baseUrl, endpoint: endpoint)
+        } catch {
+            self.errorMessage = error.localizedDescription
             return
         }
         
